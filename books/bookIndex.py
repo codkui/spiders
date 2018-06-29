@@ -151,8 +151,17 @@ def rankPathForDemo(Atexts,books,Alist):
     for n in pageText:
         if n[2]>0.75:
             print(n[0])
-Atexts,Alist=domList(books)
+# Atexts,Alist=domList(books)
 
-allLike=likeNum(Atexts,Alist)
+# allLike=likeNum(Atexts,Alist)
 
-rankPath(allLike,books,Alist)
+# rankPath(allLike,books,Alist)
+
+
+with open("e:\\code\\spiders\\books\\page\\1.html",encoding="utf-8") as f:
+    p=pq(f.read())
+    p("script").remove()
+
+for i in p("div").items():
+    text=i.text()
+    print(text,dompath(i),len(text))
