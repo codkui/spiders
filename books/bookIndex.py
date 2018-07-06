@@ -157,11 +157,78 @@ def rankPathForDemo(Atexts,books,Alist):
 
 # rankPath(allLike,books,Alist)
 
+##以下是内容页获取内容的解析方法
+# with open("e:\\code\\spiders\\books\\page\\2.html",encoding="utf-8") as f:
+#     p=pq(f.read())
+#     p("script").remove()
 
-with open("e:\\code\\spiders\\books\\page\\1.html",encoding="utf-8") as f:
-    p=pq(f.read())
-    p("script").remove()
+# texts=[]
+# for i in p("div").items():
+#     text=i.text()
+#     path=dompath(i)
+#     paths=path.split(" ")
+#     texts.append([path,len(paths),len(paths)*10*len(text),len(text),text])
+#     # print(text,len(text))
+# texts=sorted(texts,key=lambda x:x[2],reverse=True)
+# for i in texts:
+#     print(i)
 
-for i in p("div").items():
-    text=i.text()
-    print(text,dompath(i),len(text))
+##研究如何从字符串和书名中解析出固定的正则规则，以匹配页面为书籍目录页的可信度
+## 并且可以通过该解析式将域名下其他书籍名解析出来
+
+bookname="天龙八部"
+
+title="天龙八部最新章节列表_天龙八部(易亨贞)小说_天龙八部全文阅读 - 快眼看书"
+
+btitle="最强军婚：首长，求轻宠！最新章节列表_最强军婚：首长，求轻宠！(小喵妖娆)小说_最强军婚：首长，求轻宠！全文阅读 - 快眼看书"
+
+
+spilitWord={}
+spilitWords={}
+b=title.replace(bookname,"")
+print(b)
+
+if len(b)==0:
+    print(btitle)    
+else:
+    for i in range(len(b)):
+        spilitWord[b[i]]=True
+    print(spilitWord)
+
+    temp=""
+    for i in title:
+        if i in spilitWord.keys():
+            temp+=i
+            spilitWords[temp]=len(temp)
+        else:
+            temp=""
+    print(spilitWords)
+    temp=""
+    for i in btitle:
+        if i in spilitWord.keys():
+            temp+=i
+            if temp in spilitWords.keys():
+                spilitWords[temp]=spilitWords[temp]*4
+            else:
+                spilitWords[temp]=len(temp)
+        else:
+            temp=""
+    print(spilitWords)
+    spilitWord1=sorted(spilitWords.items(),key=lambda x:x[1],reverse=True)
+    print(spilitWord1)
+    exit()
+    
+# b=title.split(bookname)
+# print(b)
+
+# if len(b)==0 and b[0]=="":
+#     print(btitle)    
+# else:
+#     bSpi=btitle
+#     for i in b:
+#         if i=="":
+#             continue
+#         bSpi=bSpi.replace(i,"$$")
+#     print(bSpi)
+#     bSpi=bSpi.split("$$")
+#     print(bSpi)
