@@ -13,11 +13,25 @@ def dompath(el):
     path=""
     pa=el.parents()
     for i in pa:
-        # path=path+" "+i.tag
-        path=path+" "+i.get("class")
+        # path=path+" "+i.tag\
+        cl=i.get('class')
+
+        # print(cl)
+        cl1=i.get('id')
+        # print(cl1)
+        if cl==None:
+            if cl1==None:
+                cl=i.tag
+            else:
+                cl='#'+cl1
+        else:
+            cl='.'+cl
+        cl=cl.split(" ")[0]
+        path=path+" "+cl
     path+=" "+el[0].tag
+    # print(path)
     return path
-FILEPATH="e:\\code\\spiders\\books\\file\\"
+FILEPATH='C:/code/spiders/books/file/'
 books=[]
 for a in os.listdir(FILEPATH):
     with open(FILEPATH+a,encoding="utf-8") as f:
@@ -98,7 +112,7 @@ def rankPath(Atexts,books,Alist):
         pathQ=sorted(pathQ.items(), key=lambda x: x[1], reverse=True)
         # for n in pathQ.keys():
         cc=books[i](pathQ[0][0]).text()
-        # print(cc+"  "+pathQ[0][0]+"   "+str(pathQ[0][1]))
+        print(cc+"  "+pathQ[0][0]+"   "+str(pathQ[0][1]))
         pageText.append([cc,pathQ[0][0],0])
 
     #根据页面提取数据清洗无效页面
