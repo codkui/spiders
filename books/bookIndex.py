@@ -13,7 +13,8 @@ def dompath(el):
     path=""
     pa=el.parents()
     for i in pa:
-        path=path+" "+i.tag
+        # path=path+" "+i.tag
+        path=path+" "+i.get("class")
     path+=" "+el[0].tag
     return path
 FILEPATH="e:\\code\\spiders\\books\\file\\"
@@ -151,11 +152,11 @@ def rankPathForDemo(Atexts,books,Alist):
     for n in pageText:
         if n[2]>0.75:
             print(n[0])
-# Atexts,Alist=domList(books)
+Atexts,Alist=domList(books)
 
-# allLike=likeNum(Atexts,Alist)
+allLike=likeNum(Atexts,Alist)
 
-# rankPath(allLike,books,Alist)
+rankPath(allLike,books,Alist)
 
 ##以下是内容页获取内容的解析方法
 # with open("e:\\code\\spiders\\books\\page\\2.html",encoding="utf-8") as f:
@@ -178,45 +179,127 @@ def rankPathForDemo(Atexts,books,Alist):
 
 bookname="天龙八部"
 
-title="天龙八部最新章节列表_天龙八部(易亨贞)小说_天龙八部全文阅读 - 快眼看书"
+# title="天龙八部最新章节列表_天龙八部(易亨贞)小说_天龙八部全文阅读 - 快眼看书"
+title="天龙八部最新章节(全本大结局)，天龙八部全文阅读，天龙八部无弹窗，作者：金庸 - 三五中文网"
 
-btitle="最强军婚：首长，求轻宠！最新章节列表_最强军婚：首长，求轻宠！(小喵妖娆)小说_最强军婚：首长，求轻宠！全文阅读 - 快眼看书"
+# btitle="最强军婚：首长，求轻宠！最新章节列表_最强军婚：首长，求轻宠！(小喵妖娆)小说_最强军婚：首长，求轻宠！全文阅读 - 快眼看书"
+btitle="莽荒纪最新章节(全本大结局)，莽荒纪全文阅读，莽荒纪无弹窗，作者：我吃西红柿 - 三五中文网"
 
-
-spilitWord={}
-spilitWords={}
-b=title.replace(bookname,"")
-print(b)
-
-if len(b)==0:
-    print(btitle)    
-else:
-    for i in range(len(b)):
-        spilitWord[b[i]]=True
-    print(spilitWord)
-
-    temp=""
-    for i in title:
-        if i in spilitWord.keys():
-            temp+=i
-            spilitWords[temp]=len(temp)
-        else:
-            temp=""
-    print(spilitWords)
-    temp=""
-    for i in btitle:
-        if i in spilitWord.keys():
-            temp+=i
-            if temp in spilitWords.keys():
-                spilitWords[temp]=spilitWords[temp]*4
+#根据已知小说名将剩余字符串清理
+#根据清理后的字符串生成2-最长长度的子串
+# a=title.replace(bookname,"")
+a=title.split(bookname)
+seChar={}
+for i in a:
+    for n in range(len(i)-1):
+        q=n+2
+        for t in range(len(i)-q+1):
+            thisChar=i[t:t+q]
+            if thisChar in seChar.keys():
+                seChar[thisChar]+=1
             else:
-                spilitWords[temp]=len(temp)
-        else:
-            temp=""
-    print(spilitWords)
-    spilitWord1=sorted(spilitWords.items(),key=lambda x:x[1],reverse=True)
-    print(spilitWord1)
-    exit()
+                seChar[thisChar]=1
+# print(seChar)
+#根据未知标题进行重复度验证
+for i in seChar:
+    if i in btitle:
+        seChar[i]+=1
+# spilitWord1=sorted(seChar.items(),key=lambda x:x[1],reverse=True)
+# print(spilitWord1)
+# print(len(seChar.keys()))
+
+#清洗无效数据，包括子字符串，出现1次的字符串
+qChar=[]
+for i in seChar:
+    if seChar[i]==1:
+        qChar.append(i)
+        continue
+    for n in seChar:
+        if n in i and n!=i and seChar[n]<=seChar[i]:
+            qChar.append(n)
+
+qChar=set(qChar)
+
+# print(qChar)
+# print(len(qChar))
+newSeChar={}
+for i in seChar:
+    # print(i)
+    if i in qChar:
+        pass
+    else:
+        # print(i)
+        newSeChar[i]=seChar[i]
+
+print(newSeChar)
+
+#根据有效截取小说名
+newTitile=btitle
+for i in newSeChar:
+    newTitile=newTitile.replace(i,"####")
+newTitile=newTitile.split("####")
+print(newTitile)
+
+#根据切分进行可信度计算，第一，重复次数，第二，为子集且不为空
+hadTitle={}
+for i in newTitile:
+    if i=="":
+        continue
+    if i in hadTitle.keys():
+        hadTitle[i]+=1
+    else:
+        hadTitle[i]=1
+    for n in newTitile:
+        if i in n and i!=n:
+            hadTitle[i]+=1
+hadTitle=sorted(hadTitle.items(),key=lambda x:x[1],reverse=True)
+print(hadTitle)
+# spilitWord={}
+# spilitWords={}
+# b=title.replace(bookname,"")
+# print(b)
+
+# if len(b)==0:
+#     print(btitle)    
+# else:
+#     for i in range(len(b)):
+#         spilitWord[b[i]]=True
+#     print(spilitWord)
+
+#     temp=""
+#     for i in title:
+#         if i in spilitWord.keys():
+#             temp+=i
+#             # spilitWords[temp]=len(temp)
+#             spilitWords[temp]=1
+#         else:
+#             temp=""
+#     print(spilitWords)
+#     temp=""
+#     for i in btitle:
+#         if i in spilitWord.keys():
+#             temp+=i
+#             if temp in spilitWords.keys():
+#                 # spilitWords[temp]=spilitWords[temp]*4
+#                 spilitWords[temp]+=1
+#             else:
+#                 # spilitWords[temp]=len(temp)
+#                 spilitWords[temp]=1
+#         else:
+#             temp=""
+#     print(spilitWords)
+#     #循环迭代，将所有被包含且出现次数等于低于父级的字符串丢弃
+#     qChar=[]
+#     for i in spilitWords:
+#         for n in spilitWords:
+#             if n in i and n!=i and spilitWords[n]<=spilitWords[i]:
+#                 print(n)
+#                 qChar.append(n)
+#     qChar=set(qChar)
+#     print(qChar)
+#     spilitWord1=sorted(spilitWords.items(),key=lambda x:x[1],reverse=True)
+#     print(spilitWord1)
+#     exit()
     
 # b=title.split(bookname)
 # print(b)
